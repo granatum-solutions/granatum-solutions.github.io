@@ -8,7 +8,7 @@ Authorization: {token}
 
 ## OpenAPI спецификация
 [Swagger-UI](/swagger)  
-[openapi.yaml](/todo)
+[openapi.yaml](https://raw.githubusercontent.com/granatum-solutions/granatum-solutions.github.io/master/swagger/openapi.yaml)
 
 # Авторизация
 

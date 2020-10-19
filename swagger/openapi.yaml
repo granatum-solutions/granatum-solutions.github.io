@@ -1,0 +1,253 @@
+openapi: 3.0.0
+info:
+  description: '<a href="/">Вернуться на главную</a>'
+  version: 1.0.0
+  title: Granatum API
+  contact:
+    email: todo@granatum.solutions
+servers:
+  - url: https://api.granatum.solutions/integration
+tags:
+  - name: Авторизация
+  - name: Статистика
+paths:
+  /register:
+    post:
+      tags:
+        - Авторизация
+      summary: Создать новый аккаунт
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        201:
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUserResponse'
+  /users:
+    get:
+      tags:
+        - Статистика
+      summary: Получить список всех пользователей
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /courses:
+    get:
+      tags:
+        - Статистика
+      summary: Получить список всех курсов
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+  /courses/{id}/users:
+    get:
+      tags:
+        - Статистика
+      summary: Получить список пользователей курса
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id курса
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /courses/{id}/sessions:
+    get:
+      tags:
+        - Статистика
+      summary: Получить список сессий курса
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id курса
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+  /courses/{id}/progress:
+    get:
+      tags:
+        - Статистика
+      summary: Прогресс пользователей курса
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id курса
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Progress'
+  /sessions/{id}/users:
+    get:
+      tags:
+        - Статистика
+      summary: Получить список пользователей сессии
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id сессии
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /sessions/{id}/results:
+    get:
+      tags:
+        - Статистика
+      summary: Результаты прохождения тестов в сессии
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id сессии
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TestResult'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: token
+  schemas:
+    CreateUserResponse:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    CreateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        externalId:
+          type: string
+          description: Id пользователя во внешней системе
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+        externalId:
+          type: string
+          description: Id пользователя во внешней системе
+        active:
+          type: boolean
+        role:
+          $ref: '#/components/schemas/Role'
+    Role:
+      type: string
+      enum:
+        - USER
+        - ADMIN
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        courseId:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+    TestResult:
+      type: object
+      properties:
+        email:
+          type: string
+        attempts:
+          type: number
+        score:
+          type: number
+    Progress:
+      type: object
+      properties:
+        email:
+          type: string
+        sessions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              averageScore:
+                type: number
+
+security:
+  - ApiKeyAuth: [ ]

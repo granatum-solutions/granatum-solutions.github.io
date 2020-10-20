@@ -14,7 +14,7 @@ Authorization: {api_key}
 
 ## Создать новый аккаунт
 #### Запрос
-Дополнительные поля можно послать внутри объекта **additionalProperties**
+Дополнительные поля можно послать внутри объекта **additionalProperties**  
 **POST /registration**
 ```json
 {

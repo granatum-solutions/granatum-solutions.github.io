@@ -11,7 +11,7 @@ tags:
   - name: Авторизация
   - name: Статистика
 paths:
-  /register:
+  /registration:
     post:
       tags:
         - Авторизация
@@ -185,6 +185,9 @@ components:
         externalId:
           type: string
           description: Id пользователя во внешней системе
+        additionalProperties:
+          type: object
+          description: Дополнительные поля (имя, фамилия, департамент и т.д.)
     User:
       type: object
       properties:
@@ -197,6 +200,9 @@ components:
           type: boolean
         role:
           $ref: '#/components/schemas/Role'
+        additionalProperties:
+          type: object
+          description: Дополнительные поля (имя, фамилия, департамент и т.д.)
     Role:
       type: string
       enum:

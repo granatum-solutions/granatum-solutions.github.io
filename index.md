@@ -14,11 +14,13 @@ Authorization: {api_key}
 
 ## Создать новый аккаунт
 #### Запрос
-**POST /register**
+Дополнительные поля можно послать внутри объекта **additionalProperties**
+**POST /registration**
 ```json
 {
   "email": "string",
-  "externalId": "string"
+  "externalId": "string",
+  "additionalProperties": {}
 }
 ```
 #### Ответ
@@ -40,7 +42,8 @@ Authorization: {api_key}
     "email": "string",
     "externalId": "string",
     "active": true,
-    "role": "USER"
+    "role": "USER",
+    "additionalProperties": {}
   }
 ]
 ```
@@ -101,7 +104,8 @@ Authorization: {api_key}
     "email": "string",
     "externalId": "string",
     "active": true,
-    "role": "USER"
+    "role": "USER",
+    "additionalProperties": {}
   }
 ]
 ```
@@ -128,7 +132,8 @@ Authorization: {api_key}
     "email": "string",
     "externalId": "string",
     "active": true,
-    "role": "USER"
+    "role": "USER",
+    "additionalProperties": {}
   }
 ]
 ```

@@ -182,6 +182,12 @@ components:
       properties:
         email:
           type: string
+        lang:
+          type: string
+          enum:
+            - ru
+            - he
+            - en
         externalId:
           type: string
           description: Id пользователя во внешней системе

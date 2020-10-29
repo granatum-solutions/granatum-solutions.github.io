@@ -260,6 +260,8 @@ components:
       properties:
         email:
           type: string
+        name:
+          type: string
         sessions:
           type: array
           items:

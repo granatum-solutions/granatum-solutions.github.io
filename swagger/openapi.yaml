@@ -194,6 +194,14 @@ components:
         additionalProperties:
           type: object
           description: Дополнительные поля (имя, фамилия, департамент и т.д.)
+        coursePermissions:
+          type: object
+          properties:
+            "{courseId}":
+              type: string
+              enum:
+                - USER
+                - COURSE_ADMIN
     User:
       type: object
       properties:
@@ -209,11 +217,14 @@ components:
         additionalProperties:
           type: object
           description: Дополнительные поля (имя, фамилия, департамент и т.д.)
+        wasActive:
+          type: boolean
     Role:
       type: string
       enum:
         - USER
         - ADMIN
+        - COURSE_ADMIN
     Course:
       type: object
       properties:

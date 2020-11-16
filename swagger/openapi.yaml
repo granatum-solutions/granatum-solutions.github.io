@@ -29,6 +29,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateUserResponse'
+  /reset:
+    post:
+      tags:
+        - Авторизация
+      summary: Сбросить пароль
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        200:
+          description: Пароль сброшен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetPasswordResponse'
   /users:
     get:
       tags:
@@ -174,6 +192,18 @@ components:
       type: object
       properties:
         email:
+          type: string
+        password:
+          type: string
+    ResetPasswordRequest:
+      type: object
+      properties:
+        id:
+          type: string
+    ResetPasswordResponse:
+      type: object
+      properties:
+        id:
           type: string
         password:
           type: string

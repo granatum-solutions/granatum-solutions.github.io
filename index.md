@@ -31,6 +31,22 @@ Authorization: {api_key}
 }
 ```
 
+## Сброс пароля
+#### Запрос
+**POST /reset**
+```json
+{
+  "id": "userID"
+}
+```
+#### Ответ
+```json
+{
+  "id": "userID",
+  "password": "new-password"
+}
+
+```
 # Статистика
 ## Получить список всех пользователей
 #### Запрос

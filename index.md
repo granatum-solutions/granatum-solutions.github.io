@@ -12,8 +12,10 @@
 ```
 Authorization: {api_key}
 ```
-
+Запрос и ответ передается в формате JSON.
 ## OpenAPI спецификация
+OpenAPI представляет собой формализованную спецификацию и полноценный фреймворк для описания, создания, использования и
+визуализации веб-сервисов.  
 [Swagger-UI](/swagger)  
 [openapi.yaml](https://raw.githubusercontent.com/granatum-solutions/granatum-solutions.github.io/master/swagger/openapi.yaml)
 

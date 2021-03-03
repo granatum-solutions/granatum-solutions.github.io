@@ -85,17 +85,7 @@ OpenAPI представляет собой формализованную сп�
 
 #### Запрос
 
-**DELETE /courses/{id}/users**
-
-```json
-{
-  "accountIds": [
-    "userID1",
-    "userID2"
-  ],
-  "role": "USER"
-}
-```
+**DELETE /courses/{id}/users?userId=userID1&role=USER**
 
 #### Ответ
 

@@ -29,6 +29,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateUserResponse'
+        400:
+          description: Пользователь уже существует
   /reset:
     post:
       tags:

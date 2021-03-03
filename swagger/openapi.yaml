@@ -96,6 +96,55 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+    post:
+      tags:
+        - Доступ
+      summary: Предоставить доступ к курсу
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id курса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseAccessRequest'
+      responses:
+        200:
+          description: OK
+    delete:
+      tags:
+        - Доступ
+      summary: Удалить пользователей из курса
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id курса
+        - in: query
+          name: userId
+          schema:
+            type: array
+            items:
+              type: string
+          required: true
+          description: Id пользователя
+        - in: query
+          name: Роль
+          schema:
+            type: string
+            default: USER
+          required: false
+          description: Роль
+      responses:
+        200:
+          description: OK
   /courses/{id}/sessions:
     get:
       tags:
@@ -303,6 +352,15 @@ components:
                 type: string
               averageScore:
                 type: number
+    CourseAccessRequest:
+      type: object
+      properties:
+        accountIds:
+          type: array
+          items:
+            type: string
+        role:
+          $ref: '#/components/schemas/Role'
 
 security:
   - ApiKeyAuth: [ ]

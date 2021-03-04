@@ -130,7 +130,7 @@ paths:
           required: true
           description: Id курса
         - in: query
-          name: userId
+          name: id
           schema:
             type: array
             items:

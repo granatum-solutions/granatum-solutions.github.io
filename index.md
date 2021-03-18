@@ -30,7 +30,9 @@ OpenAPI представляет собой формализованную сп�
 {
   "email": "string",
   "externalId": "string",
-  "additionalProperties": {},
+  "additionalProperties": {
+    "key": "value"
+  },
   "coursePermissions": {
     "courseId": "USER",
     "anotherCourseId": "COURSE_ADMIN"

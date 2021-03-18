@@ -29,6 +29,7 @@ OpenAPI представляет собой формализованную сп�
 ```json
 {
   "email": "string",
+  "name": "string",
   "externalId": "string",
   "additionalProperties": {
     "key": "value"
@@ -44,7 +45,33 @@ OpenAPI представляет собой формализованную сп�
 {
   "id": "6052107bcf35a141992f041c",
   "email": "string",
+  "name": "string",
   "password": "string"
+}
+```
+
+## Изменить аккаунт
+#### Запрос
+**PATCH /account/{id}**
+```json
+{
+  "name": "string",
+  "externalId": "string",
+  "additionalProperties": {
+    "key": "value"
+  }
+}
+```
+#### Ответ
+```json
+{
+  "id": "6052107bcf35a141992f041c",
+  "email": "string",
+  "name": "string",
+  "externalId": "string",
+  "additionalProperties": {
+    "key": "value"
+  }
 }
 ```
 

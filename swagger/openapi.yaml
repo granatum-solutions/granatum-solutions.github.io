@@ -31,6 +31,31 @@ paths:
                 $ref: '#/components/schemas/CreateUserResponse'
         400:
           description: Пользователь уже существует
+  /account/{id}:
+    patch:
+      tags:
+        - Авторизация
+      summary: Изменить аккаунт
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        200:
+          description: Пользователь изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
   /reset:
     post:
       tags:
@@ -265,6 +290,8 @@ components:
       properties:
         email:
           type: string
+        name:
+          type: string
         lang:
           type: string
           enum:
@@ -285,12 +312,26 @@ components:
               enum:
                 - USER
                 - COURSE_ADMIN
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Имя
+        externalId:
+          type: string
+          description: Id пользователя во внешней системе
+        additionalProperties:
+          type: object
+          description: Дополнительные поля (имя, фамилия, департамент и т.д.)
     User:
       type: object
       properties:
         id:
           type: string
         email:
+          type: string
+        name:
           type: string
         externalId:
           type: string

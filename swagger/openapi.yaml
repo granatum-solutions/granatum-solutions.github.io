@@ -292,6 +292,11 @@ components:
           type: string
         name:
           type: string
+        projectIds:
+          type: array
+          nullable: true
+          items:
+            type: string
         lang:
           type: string
           enum:
@@ -318,6 +323,11 @@ components:
         name:
           type: string
           description: Имя
+        projectIds:
+          type: array
+          nullable: true
+          items:
+            type: string
         externalId:
           type: string
           description: Id пользователя во внешней системе

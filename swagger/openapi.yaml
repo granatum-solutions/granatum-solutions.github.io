@@ -32,6 +32,20 @@ paths:
         400:
           description: Пользователь уже существует
   /account/{id}:
+    delete:
+      tags:
+        - Авторизация
+      summary: Удалить аккаунт
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id пользователя
+      responses:
+        200:
+          description: Пользователь удалён
     patch:
       tags:
         - Авторизация

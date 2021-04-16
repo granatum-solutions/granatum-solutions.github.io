@@ -475,6 +475,37 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/TestResult'
+  /sessions/{id}/passing:
+    post:
+      tags:
+        - Управление
+      summary: Начать новое прохождение сессии
+      parameters:
+        - name: id
+          in: path
+      responses:
+        200:
+          description: OK
+  /sessions/copy:
+    post:
+      tags:
+        - Управление
+      summary: Копировать сессию
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CopySessionRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
 
 components:
   securitySchemes:
@@ -497,6 +528,9 @@ components:
       properties:
         id:
           type: string
+        password:
+          type: string
+          required: false
     ResetPasswordResponse:
       type: object
       properties:
@@ -509,6 +543,9 @@ components:
       properties:
         email:
           type: string
+        password:
+          type: string
+          required: false
         name:
           type: string
         projectIds:
@@ -637,6 +674,15 @@ components:
             type: string
         role:
           $ref: '#/components/schemas/Role'
+    CopySessionRequest:
+      type: object
+      properties:
+        courseId:
+          type: string
+        sessionIds:
+          type: array
+          items:
+            type: string
     Page:
       type: object
       properties:

@@ -509,6 +509,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Session'
+  /sessions{id}:
+    delete:
+      tags:
+        - Управление
+      summary: Удалить сессию
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Id сессии
+      responses:
+        200:
+          description: Сессия удалена
   /sessions/{id}/invite:
     get:
       tags:

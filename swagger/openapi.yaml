@@ -10,6 +10,9 @@ servers:
 tags:
   - name: Авторизация
   - name: Статистика
+  - name: Инвайт
+  - name: Доступ
+  - name: Управление
 paths:
   /registration:
     post:
@@ -506,6 +509,25 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Session'
+  /sessions/{id}/invite:
+    get:
+      tags:
+        - Инвайт
+      summary: Получить инвайт в сессию
+      parameters:
+        - in: path
+          name: id
+          schema:
+           type: string
+         required: true
+         description: Id сессии
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Invite'
 
 components:
   securitySchemes:
@@ -735,6 +757,11 @@ components:
           type: boolean
         empty:
           type: boolean
+    Invite:
+      type: object
+      properties:
+        invite:
+          type: string
 
 security:
   - ApiKeyAuth: [ ]

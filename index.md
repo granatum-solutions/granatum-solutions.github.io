@@ -277,18 +277,47 @@ OpenAPI представляет собой формализованную сп�
 
 #### Запрос
 
-**GET /sessions/{id}/results**
+**GET /sessions/{id}/results?page={pageNumber}&size={pageSize}**
 
+pageNumber - номер интересующей страницы из списка возвращённых страниц
+pageSize - количество объектов на одной странице
 #### Ответ
 
 ```json
-[
-  {
-    "email": "string",
-    "attempts": 0,
-    "score": 0
-  }
-]
+{
+  "content": [
+    {
+      "email": "email",
+      "attempts": 0,
+      "score": 0
+    }
+  ],
+  "pageable": {
+    "sort": {
+      "sorted": false,
+      "unsorted": true,
+      "empty": true
+    },
+    "pageNumber": 0,
+    "pageSize": 0,
+    "offset": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "totalElements": 0,
+  "last": true,
+  "totalPages": 0,
+  "first": true,
+  "sort": {
+    "sorted": false,
+    "unsorted": true,
+    "empty": true
+  },
+  "number": 0,
+  "numberOfElements": 0,
+  "size": 0,
+  "empty": false
+}
 ```
 
 ## Получить список пользователей сессии

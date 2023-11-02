@@ -1,667 +1,487 @@
-openapi: 3.0.0
+openapi: 3.0.1
 info:
-  description: '<a href="/">Вернуться на главную</a>'
-  version: 1.0.0
-  title: Granatum API
+  title: GRANATUM 2 | API
+  description: ''
   contact:
-    email: todo@granatum.solutions
+    name: GRANATUM SOLUTIONS
+    url: https://granatum.solutions
+    email: info@granatum.solutions
+  version: 2.26.0
 servers:
-  - url: https://api.granatum.solutions/integration
-tags:
-  - name: Авторизация
-  - name: Статистика
-  - name: Инвайт
-  - name: Доступ
-  - name: Управление
+  - url: https://api.granatum.solutions
 paths:
-  /registration:
+  /api/users:
     post:
       tags:
-        - Авторизация
-      summary: Создать новый аккаунт
+        - API
+      summary: Создать пользователя
+      operationId: createUser
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserIdResponse'
+    delete:
+      tags:
+        - API
+      summary: Очистить данные пользователей
+      operationId: clearUsersData
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: sessionId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+
+  /api/spaces/{spaceID}:
+    get:
+      tags:
+        - API
+      summary: Получить пространство
+      operationId: getSpace
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: spaceID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Space'
+
+  /api/folders/{folderID}:
+    get:
+      tags:
+        - API
+      summary: Получить папку по ID
+      operationId: getFolder
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: folderID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Folder'
+    delete:
+      tags:
+        - API
+      summary: Удалить папку
+      operationId: deleteFolder
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: folderID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/folders:
+    post:
+      tags:
+        - API
+      summary: Создать папку
+      operationId: createFolder
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserRequest'
+              $ref: '#/components/schemas/CreateFolderCommand'
+        required: true
       responses:
-        201:
-          description: Пользователь создан
+        '200':
+          description: OK
           content:
-            application/json:
+            '*/*':
               schema:
-                $ref: '#/components/schemas/CreateUserResponse'
-        400:
-          description: Пользователь уже существует
-  /account/{id}:
-    delete:
-      tags:
-        - Авторизация
-      summary: Удалить аккаунт
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: Id пользователя
-      responses:
-        200:
-          description: Пользователь удалён
+                $ref: '#/components/schemas/Folder'
     patch:
       tags:
-        - Авторизация
-      summary: Изменить аккаунт
+        - API
+      summary: Редактировать папку
+      operationId: editFolder
       parameters:
-        - in: path
-          name: id
+        - name: CLIENT_KEY
+          in: header
+          required: true
           schema:
             type: string
-          required: true
-          description: Id пользователя
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
-      responses:
-        200:
-          description: Пользователь изменен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-  /reset:
-    post:
-      tags:
-        - Авторизация
-      summary: Сбросить пароль
-      requestBody:
+              $ref: '#/components/schemas/UpdateFolderCommand'
         required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ResetPasswordRequest'
       responses:
-        200:
-          description: Пароль сброшен
+        '200':
+          description: OK
           content:
-            application/json:
+            '*/*':
               schema:
-                $ref: '#/components/schemas/ResetPasswordResponse'
-  /users:
+                $ref: '#/components/schemas/Folder'
+
+  /api/folders/{folderID}/sessions:
     get:
       tags:
-        - Статистика
-      summary: Получить список всех пользователей
+        - API
+      summary: Получить все сессии папки
+      operationId: getSessions
       parameters:
-        - name: page
-          in: query
-          description: Zero-based page index (0..N)
-          required: false
-          schema:
-            minimum: 0
-            type: integer
-            default: '0'
-        - name: size
-          in: query
-          description: The size of the page to be returned
-          required: false
-          schema:
-            minimum: 1
-            type: integer
-            default: '20'
-        - name: sort
-          in: query
-          description: 'Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Page'
-                  - type: object
-                    properties:
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/User'
-  /courses:
-    get:
-      tags:
-        - Статистика
-      summary: Получить список всех курсов
-      parameters:
-        - name: page
-          in: query
-          description: Zero-based page index (0..N)
-          required: false
-          schema:
-            minimum: 0
-            type: integer
-            default: '0'
-        - name: size
-          in: query
-          description: The size of the page to be returned
-          required: false
-          schema:
-            minimum: 1
-            type: integer
-            default: '20'
-        - name: sort
-          in: query
-          description: 'Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Page'
-                  - type: object
-                    properties:
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Course'
-  /courses/{id}/users:
-    get:
-      tags:
-        - Статистика
-      summary: Получить список пользователей курса
-      parameters:
-        - name: page
-          in: query
-          description: Zero-based page index (0..N)
-          required: false
-          schema:
-            minimum: 0
-            type: integer
-            default: '0'
-        - name: size
-          in: query
-          description: The size of the page to be returned
-          required: false
-          schema:
-            minimum: 1
-            type: integer
-            default: '20'
-        - name: sort
-          in: query
-          description: 'Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-        - in: path
-          name: id
+        - name: CLIENT_KEY
+          in: header
+          required: true
           schema:
             type: string
-          required: true
-          description: Id курса
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Page'
-                  - type: object
-                    properties:
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/User'
-    post:
-      tags:
-        - Доступ
-      summary: Предоставить доступ к курсу
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: Id курса
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CourseAccessRequest'
-      responses:
-        200:
-          description: OK
-    delete:
-      tags:
-        - Доступ
-      summary: Удалить пользователей из курса
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: Id курса
-        - in: query
-          name: id
-          schema:
-            type: array
-            items:
-              type: string
-          required: true
-          description: Id пользователя
-        - in: query
-          name: Роль
-          schema:
-            type: string
-            default: USER
-          required: false
-          description: Роль
-      responses:
-        200:
-          description: OK
-  /courses/{id}/sessions:
-    get:
-      tags:
-        - Статистика
-      summary: Получить список сессий курса
-      parameters:
-        - name: page
-          in: query
-          description: Zero-based page index (0..N)
-          required: false
-          schema:
-            minimum: 0
-            type: integer
-            default: '0'
-        - name: size
-          in: query
-          description: The size of the page to be returned
-          required: false
-          schema:
-            minimum: 1
-            type: integer
-            default: '20'
-        - name: sort
-          in: query
-          description: 'Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: Id курса
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Page'
-                  - type: object
-                    properties:
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Session'
-  /courses/{id}/progress:
-    get:
-      tags:
-        - Статистика
-      summary: Прогресс пользователей курса
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: Id курса
-        - name: page
-          in: query
-          description: Zero-based page index (0..N)
-          required: false
-          schema:
-            minimum: 0
-            type: integer
-            default: '0'
-        - name: size
-          in: query
-          description: The size of the page to be returned
-          required: false
-          schema:
-            minimum: 1
-            type: integer
-            default: '20'
-        - name: sort
-          in: query
-          description: 'Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Page'
-                  - type: object
-                    properties:
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Progress'
-  /sessions/{id}/users:
-    get:
-      tags:
-        - Статистика
-      summary: Получить список пользователей сессии
-      parameters:
-        - name: page
-          in: query
-          description: Zero-based page index (0..N)
-          required: false
-          schema:
-            minimum: 0
-            type: integer
-            default: '0'
-        - name: size
-          in: query
-          description: The size of the page to be returned
-          required: false
-          schema:
-            minimum: 1
-            type: integer
-            default: '20'
-        - name: sort
-          in: query
-          description: 'Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: Id сессии
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Page'
-                  - type: object
-                    properties:
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/User'
-  /sessions/{id}/results:
-    get:
-      tags:
-        - Статистика
-      summary: Результаты прохождения тестов в сессии
-      parameters:
-        - name: page
-          in: query
-          description: Zero-based page index (0..N)
-          required: false
-          schema:
-            minimum: 0
-            type: integer
-            default: '0'
-        - name: size
-          in: query
-          description: The size of the page to be returned
-          required: false
-          schema:
-            minimum: 1
-            type: integer
-            default: '20'
-        - name: sort
-          in: query
-          description: 'Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: Id сессии
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Page'
-                  - type: object
-                    properties:
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/TestResult'
-  /sessions/{id}/passing:
-    post:
-      tags:
-        - Управление
-      summary: Начать новое прохождение сессии
-      parameters:
-        - name: id
+        - name: folderID
           in: path
+          required: true
+          schema:
+            type: string
       responses:
-        200:
-          description: OK
-  /sessions/copy:
-    post:
-      tags:
-        - Управление
-      summary: Копировать сессию
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CopySessionRequest'
-      responses:
-        200:
+        '200':
           description: OK
           content:
-            application/json:
+            '*/*':
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Session'
-  /sessions{id}:
-    delete:
-      tags:
-        - Управление
-      summary: Удалить сессию
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: Id сессии
-      responses:
-        200:
-          description: Сессия удалена
-  /sessions/{id}/invite:
+
+  /api/sessions/{sessionID}:
     get:
       tags:
-        - Инвайт
-      summary: Получить инвайт в сессию
+        - API
+      summary: Получить сессию по ID
+      operationId: getSession_1
       parameters:
-        - in: path
-          name: id
+        - name: CLIENT_KEY
+          in: header
+          required: true
           schema:
-           type: string
-         required: true
-         description: Id сессии
+            type: string
+        - name: sessionID
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
-        200:
+        '200':
           description: OK
           content:
-            application/json:
+            '*/*':
               schema:
-                  $ref: '#/components/schemas/Invite'
+                $ref: '#/components/schemas/Session'
+    delete:
+      tags:
+        - API
+      summary: Удалить сессию
+      operationId: deleteSession_1
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: sessionID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/sessions:
+    put:
+      tags:
+        - API
+      summary: Создать сессию по образу и подобию
+      operationId: createSessionFromTemplate
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: templateID
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Session'
+    post:
+      tags:
+        - API
+      summary: Создать сессию
+      operationId: createSession
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionCommand'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Session'
+    patch:
+      tags:
+        - API
+      summary: Редактировать сессию
+      operationId: createSession_1
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSessionCommand'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Session'
 
+  /api/folders/{folderID}/recordings:
+    get:
+      tags:
+        - API
+      summary: Получить все записи сессий папки
+      operationId: getRecordings
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: folderID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recording'
+  /api/recordings/{recordingID}:
+    get:
+      tags:
+        - API
+      summary: Скачать запись сессии
+      operationId: downloadRecording
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: recordingID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+  /api/sessions/{recordingID}:
+    delete:
+      tags:
+        - API
+      summary: Удалить запись сессии
+      operationId: deleteRecording
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: recordingID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/resources:
+    post:
+      tags:
+        - API
+      summary: Загрузить ресурс
+      operationId: uploadResource
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OK
+  /api/webhooks/sessionended:
+    post:
+      tags:
+        - API
+      summary: Зарегестрировать вебхук по завершению сессии
+      operationId: registerSessionEndedWebhook
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterWebhookCommand'
+      responses:
+        '200':
+          description: OK
+  /api/webhooks/recordingready:
+    post:
+      tags:
+        - API
+      summary: Зарегестрировать вебхук по завершению процесса записи
+      operationId: registerRecordingReadyWebhook
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterWebhookCommand'
+      responses:
+        '200':
+          description: OK
+  /api/sessions/{sessionId}/stats:
+    get:
+      tags:
+        - API
+      summary: Получить статистику посещений сессии
+      operationId: getSessionStats
+      parameters:
+        - name: CLIENT_KEY
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserActivity'
 components:
-  securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: token
   schemas:
-    CreateUserResponse:
+    UserIdResponse:
       type: object
       properties:
         id:
           type: string
-        email:
-          type: string
-        password:
-          type: string
-    ResetPasswordRequest:
-      type: object
-      properties:
-        id:
-          type: string
-        password:
-          type: string
-          required: false
-    ResetPasswordResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        password:
-          type: string
-    CreateUserRequest:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-          required: false
-        name:
-          type: string
-        projectIds:
-          type: array
-          nullable: true
-          items:
-            type: string
-        lang:
-          type: string
-          enum:
-            - ru
-            - he
-            - en
-        externalId:
-          type: string
-          description: Id пользователя во внешней системе
-        additionalProperties:
-          type: object
-          description: Дополнительные поля (имя, фамилия, департамент и т.д.)
-        coursePermissions:
-          type: object
-          properties:
-            "{courseId}":
-              type: string
-              enum:
-                - USER
-                - COURSE_ADMIN
-    UpdateUserRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Имя
-        projectIds:
-          type: array
-          nullable: true
-          items:
-            type: string
-        externalId:
-          type: string
-          description: Id пользователя во внешней системе
-        additionalProperties:
-          type: object
-          description: Дополнительные поля (имя, фамилия, департамент и т.д.)
-    User:
-      type: object
-      properties:
-        id:
-          type: string
-        email:
-          type: string
-        name:
-          type: string
-        externalId:
-          type: string
-          description: Id пользователя во внешней системе
-        active:
-          type: boolean
-        role:
-          $ref: '#/components/schemas/Role'
-        additionalProperties:
-          type: object
-          description: Дополнительные поля (имя, фамилия, департамент и т.д.)
-        wasActive:
-          type: boolean
-    Role:
-      type: string
-      enum:
-        - USER
-        - ADMIN
-        - COURSE_ADMIN
-    Course:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-    Session:
+          description: id пользователя
+    Space:
       type: object
       properties:
         id:
@@ -670,113 +490,319 @@ components:
           type: string
         description:
           type: string
-        courseId:
+        logo:
           type: string
-        startDate:
-          type: string
-          format: date-time
-    TestResult:
-      type: object
-      properties:
-        email:
-          type: string
-        attempts:
-          type: number
-        score:
-          type: number
-    Progress:
-      type: object
-      properties:
-        email:
-          type: string
-        name:
-          type: string
-        sessions:
+        open:
+          type: boolean
+          description: "Если true, то пользователи могут заходить в сессии без авторизации, введя имя."
+        limitActiveUsers:
+          type: integer
+          format: int32
+          description: "Ограничение по активным пользователям (в месяц)."
+        overlimit:
+          type: boolean
+          description: "True если превышено ограничение в текущем период."
+        enableTurn:
+          type: boolean
+          description: "Если true, то у всех пользователей все медиа потоки автоматически будут проходить через TURN-сервер"
+        folders:
           type: array
           items:
             type: object
             properties:
-              id:
+              folderId:
                 type: string
               name:
                 type: string
-              averageScore:
-                type: number
-    CourseAccessRequest:
+              hidden:
+                type: boolean
+                description: "True если папка скрытая (доступна только админам)"
+          description: "Список папок на root уровне"
+    Folder:
       type: object
       properties:
-        accountIds:
-          type: array
-          items:
-            type: string
-        role:
-          $ref: '#/components/schemas/Role'
-    CopySessionRequest:
-      type: object
-      properties:
-        courseId:
+        id:
           type: string
-        sessionIds:
+        spaceId:
+          type: string
+        name:
+          type: string
+        path:
+          type: string
+        coverImage:
+          type: string
+          description: "URL изображения обложки"
+        description:
+          type: string
+          description: "Описание папки"
+        hidden:
+          type: boolean
+          description: "True если папка скрытая (доступна только админам)"
+        folders:
           type: array
           items:
-            type: string
-    Page:
+            type: object
+            properties:
+              folderId:
+                type: string
+              name:
+                type: string
+              hidden:
+                type: boolean
+                description: "True если папка скрытая (доступна только админам)"
+          description: "Список дочерних папок"
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Session'
+          description: "Список сессий в папке"
+    Session:
       type: object
       properties:
-        totalElements:
+        id:
+          type: string
+        folderId:
+          type: string
+        spaceId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        closeAfterEnd:
+          type: boolean
+          description: "Закрывать доступ к сессии после endDate/completedAt"
+        orderIndex:
           type: integer
           format: int64
-        totalPages:
-          type: integer
-          format: int32
-        size:
-          type: integer
-          format: int32
-        number:
-          type: integer
-          format: int32
-        sort:
-          $ref: '#/components/schemas/Sort'
-        numberOfElements:
-          type: integer
-          format: int32
-        last:
+          description: "Индекс внутри папки"
+        sessionType:
+          type: string
+          enum:
+            - GROUP
+            - INDIVIDUAL
+          description: "Тип сессии: групповая или самостоятельная работа"
+        disableEditUserContent:
           type: boolean
-        first:
+          description: "Если true, пользователи не могут редактировать стикеры"
+        limitedAccess:
           type: boolean
-        pageable:
-          $ref: '#/components/schemas/Pageable'
-        empty:
-          type: boolean
-    Pageable:
-      type: object
-      properties:
-        page:
-          minimum: 0
-          type: integer
-          format: int32
-        size:
-          minimum: 1
-          type: integer
-          format: int32
-        sort:
+          description: "Если true, сессия доступна только пользователям в списке limitedAccessUserIds"
+        limitedAccessUserIds:
           type: array
           items:
             type: string
-    Sort:
-      type: object
-      properties:
-        sorted:
+          description: "Если limitedAccess, то список ваших id пользователей, которым доступна сессия"
+        emailNotificationOnSave:
           type: boolean
-        unsorted:
+          description: "Присылать уведомление юзерам при изменении дат сессии"
+        emailReminderEnabled:
           type: boolean
-        empty:
+          description: "Присылать напоминание о начале сессии за emailReminderMinutesBeforeStart минут до начала сессии"
+        emailReminderMinutesBeforeStart:
+          type: integer
+          format: int32
+        manualStartAndFinish:
           type: boolean
-    Invite:
-      type: object
-      properties:
-        invite:
+          description: "Отображать кнопку начала/завершения сессии для админов (сессия не доступна пользователям до нажатия)"
+        beganAt:
           type: string
-
-security:
-  - ApiKeyAuth: [ ]
+          format: date-time
+          description: "Если manualStartAndFinish true, то фактическое время начала сессии"
+        completedAt:
+          type: string
+          format: date-time
+          description: "Если manualStartAndFinish true, то фактическое время завершения сессии"
+        autoDistribution:
+          type: boolean
+          description: "Автоматическое распределение пользователей по командам"
+        authSource:
+          type: string
+          enum:
+            - wt
+            - edu
+          description: "Идентификатор авторизации"
+    Recording:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+        url:
+          type: string
+    UserActivity:
+      type: object
+      properties:
+        userId:
+          type: string
+        joined:
+          type: string
+          format: date-time
+        leaved:
+          type: string
+          format: date-time
+    CreateFolderCommand:
+      required:
+        - name
+        - folderId
+      type: object
+      properties:
+        folderId:
+          type: string
+          description: "ID папки или пространства"
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+        coverImage:
+          type: string
+          description: "ID загруженого ресурса (полученого после загрузки по эндпойнту POST /api/resource)"
+        description:
+          maxLength: 200
+          minLength: 0
+          type: string
+    UpdateFolderCommand:
+      required:
+        - folderId
+      type: object
+      properties:
+        folderId:
+          type: string
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+        coverImage:
+          type: string
+          description: "ID загруженого ресурса (полученого после загрузки по эндпойнту POST /api/resource)"
+        description:
+          maxLength: 200
+          minLength: 0
+          type: string
+          description: "Описание папки"
+    CreateSessionCommand:
+      required:
+        - folderId
+        - name
+        - sessionType
+      type: object
+      properties:
+        folderId:
+          type: string
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+        description:
+          maxLength: 200
+          minLength: 0
+          type: string
+        sessionType:
+          type: string
+          enum:
+            - GROUP
+            - INDIVIDUAL
+        disableEditUserContent:
+          type: boolean
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        emailNotificationOnSave:
+          type: boolean
+        emailReminderEnabled:
+          type: boolean
+        emailReminderMinutesBeforeStart:
+          type: integer
+          format: int32
+        closeAfterEnd:
+          type: boolean
+        limitedAccess:
+          type: boolean
+        limitedAccessUserIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        authSource:
+          type: string
+          enum:
+            - wt
+            - edu
+          description: "Идентификатор авторизации"
+    UpdateSessionCommand:
+      required:
+        - sessionId
+      type: object
+      properties:
+        sessionId:
+          type: string
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+        sessionType:
+          type: string
+          enum:
+            - GROUP
+            - INDIVIDUAL
+        description:
+          maxLength: 200
+          minLength: 0
+          type: string
+        disableEditUserContent:
+          type: boolean
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        autoDistribution:
+          type: boolean
+        emailNotificationOnSave:
+          type: boolean
+        emailReminderEnabled:
+          type: boolean
+        emailReminderMinutesBeforeStart:
+          type: integer
+          format: int32
+        limitedAccess:
+          type: boolean
+        limitedAccessUserIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        closeAfterEnd:
+          type: boolean
+        authSource:
+          type: string
+          enum:
+            - wt
+            - edu
+          description: "Идентификатор авторизации"
+    RegisterWebhookCommand:
+      required:
+        - sessionId
+      type: object
+      properties:
+        sessionId:
+          type: string
+        url:
+          type: string

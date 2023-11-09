@@ -611,14 +611,6 @@ components:
         manualStartAndFinish:
           type: boolean
           description: "Отображать кнопку начала/завершения сессии для админов (сессия не доступна пользователям до нажатия)"
-        beganAt:
-          type: string
-          format: date-time
-          description: "Если manualStartAndFinish true, то фактическое время начала сессии"
-        completedAt:
-          type: string
-          format: date-time
-          description: "Если manualStartAndFinish true, то фактическое время завершения сессии"
         autoDistribution:
           type: boolean
           description: "Автоматическое распределение пользователей по командам"
